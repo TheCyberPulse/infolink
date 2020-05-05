@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+
+require 'redcarpet'
+require 'haml'
+require 'fileutils'
+
+renderer = Redcarpet::Render::HTML.new(render_options = {})
+markdown = Redcarpet::Markdown.new(renderer, extensions = { :tables => true })
+
+Dir.glob('.posts/**/*.md').each do |filepath|
+  file = File.open(filepath, 'rb')
+
+  # Let's expect that the post Markdown files exist in a subdirectory that the
+  # rendered version should exists in on the server.  We'll assume that we only
+  # have one level of subdirectory depth.
+
+  # This looks like 'subdirectory/post_name.md'
+  subdirectory_and_post_name = filepath.split('.posts/')[1]
+
+  subdirectory = subdirectory_and_post_name.split('/')[0]
+
+  post_name = File.basename(file, File.extname(file))
+
+  post_content = markdown.render(file.read) || ''
+
+  post = Haml::Engine
+    .new(File.open('layout/template.html.haml').read)
+    .render
+    .gsub('<!-- ~~~POST_CONTENT_PLACEHOLDER~~~ -->', post_content)
+
+  if post_name == 'index'
+    File.write("public/index.html", post)
+  else
+    post_name_directory = "public/#{subdirectory}/#{post_name}"
+    post_name_directory = "public/#{post_name}" if subdirectory == 'pages'
+    FileUtils.mkdir_p(post_name_directory) unless File.directory? post_name_directory
+    File.write("#{post_name_directory}/index.html", post)
+  end
+end
