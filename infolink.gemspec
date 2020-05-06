@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'infolink'
-  s.version     = '0.0.1'
+  s.version     = '0.0.2'
   s.executables << 'infolink'
   s.date        = '2020-05-05'
   s.summary     = "A very simple static site generator"
