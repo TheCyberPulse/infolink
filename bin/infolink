@@ -30,6 +30,8 @@ Dir.glob('.posts/**/*.md').each do |filepath|
 
   if post_name == 'index'
     File.write("public/index.html", post)
+  elsif post_name == 'home'
+    File.write("public/home.html", post)
   else
     post_name_directory = "public/#{subdirectory}/#{post_name}"
     post_name_directory = "public/#{post_name}" if subdirectory == 'pages'
